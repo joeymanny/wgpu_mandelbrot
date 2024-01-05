@@ -1,27 +1,18 @@
-// @vertex
-// fn vs_main(@builtin(vertex_index) in_vertex_index: u32) -> @builtin(position) vec4<f32> {
-//     let x = f32(i32(in_vertex_index) - 1);
-//     let y = f32(i32(in_vertex_index & 1u) * 2 - 1);
-//     return vec4<f32>(x, y, 0.0, 1.0);
-// }
-
-// @fragment
-// fn fs_main(@builtin(position) coord_in: vec4<f32>) -> @location(0) vec4<f32> {
-
-//     return vec4<f32>(1.0, 0.5, 0.0, 1.0);
-//     // return coord_in * f32(0.5);
-
-// }
-
 @vertex
-fn vs_main() -> @builtin(position) vec4<f32> {
-  return vec4<f32>(0.0, 0.0, 0.0, 1.0);
+fn vs_main(@builtin(vertex_index) in_vertex_index: u32) -> @builtin(position) vec4<f32> {
+    let x = f32(i32(in_vertex_index) - 1);
+    let y = f32(i32(in_vertex_index & 1u) * 2 - 1);
+    return vec4<f32>(x, y, 0.0, 1.0);
 }
 
 @fragment
 fn fs_main(@builtin(position) coord_in: vec4<f32>) -> @location(0) vec4<f32> {
-  return vec4<f32>(coord_in.x, coord_in.y, 0.0, 1.0);
+
+    return vec4<f32>(1.0, 0.5, 0.0, 1.0);
+    // return coord_in * f32(0.5);
+
 }
+
 
 struct Complex{
     real: f32,
