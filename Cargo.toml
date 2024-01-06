@@ -10,3 +10,5 @@ winit = {version = "*", features = ["rwh_05"]}
 wgpu = "*"
 pollster = "*"
 env_logger = "*"
+bytemuck = "*"
+flume = "*"
