@@ -205,8 +205,8 @@ async fn run(event_loop: winit::event_loop::EventLoop<()>, window: winit::window
                     }
                     if delta_offset != (0, 0){
                         is_mandel_update = true;
-                        mandel_commands[2] += (2.0f32.powf(mandel_commands[4]) / 4.0) * delta_offset.0 as f32;
-                        mandel_commands[3] += (2.0f32.powf(mandel_commands[4]) / 4.0) * delta_offset.1 as f32;
+                        mandel_commands[2] = (mandel_commands[2] + (2.0f32.powf(mandel_commands[4]) / 4.0) * delta_offset.0 as f32).clamp(-3.0, 2.0);
+                        mandel_commands[3] = (mandel_commands[3] + (2.0f32.powf(mandel_commands[4]) / 4.0) * delta_offset.1 as f32).clamp(-2.0, 2.0);
                         window.request_redraw();
                     }
                     let mut delta_lod: i8 = 0;
