@@ -1,4 +1,4 @@
-
+const ZOOM_BASE: f32 = 1.3;
 
 use wgpu::{PipelineLayoutDescriptor, RenderPipelineDescriptor, util::DeviceExt};
 use winit::{event::{MouseButton, KeyEvent}, keyboard::{KeyCode, Key, PhysicalKey}};
@@ -40,8 +40,8 @@ async fn run(event_loop: winit::event_loop::EventLoop<()>, window: winit::window
     let mandel_commands: &mut [f32; 6] = &mut [
         size.width as f32, size.height as f32, // screen dimensions
         0.0, 0.0, // linear offset
-        2.0, // zoom
-        300.0, // level of detail (num mandel iterations)
+        4.0, // zoom
+        1.0, // level of detail (num mandel iterations)
     ];
     let staging_mandel_commands_buffer = device.create_buffer(&wgpu::BufferDescriptor{
         label: None,
@@ -182,7 +182,7 @@ async fn run(event_loop: winit::event_loop::EventLoop<()>, window: winit::window
                             window.request_redraw();
                         }else if y.is_sign_negative(){
                             is_mandel_update = true;
-                            mandel_commands[4] = (mandel_commands[4] + 1.0).min(2.0);
+                            mandel_commands[4] = (mandel_commands[4] + 1.0).min(8.0);
                             window.request_redraw();
                         }
                     }
@@ -205,19 +205,19 @@ async fn run(event_loop: winit::event_loop::EventLoop<()>, window: winit::window
                     }
                     if delta_offset != (0, 0){
                         is_mandel_update = true;
-                        mandel_commands[2] = (mandel_commands[2] + (2.0f32.powf(mandel_commands[4]) / 4.0) * delta_offset.0 as f32).clamp(-3.0, 2.0);
-                        mandel_commands[3] = (mandel_commands[3] + (2.0f32.powf(mandel_commands[4]) / 4.0) * delta_offset.1 as f32).clamp(-2.0, 2.0);
+                        mandel_commands[2] = (mandel_commands[2] + (ZOOM_BASE.powf(mandel_commands[4]) / 10.0) * delta_offset.0 as f32).clamp(-3.0, 2.0);
+                        mandel_commands[3] = (mandel_commands[3] + (ZOOM_BASE.powf(mandel_commands[4]) / 10.0) * delta_offset.1 as f32).clamp(-2.0, 2.0);
                         window.request_redraw();
                     }
-                    let mut delta_lod: i8 = 0;
+                    let mut delta_lod: f32 = 0.0;
                     if let KeyCode::Equal = key{
-                        delta_lod += 1;
+                        delta_lod = 1.0/8.0;
                     }
                     if let KeyCode::Minus = key{
-                        delta_lod += -1;
+                        delta_lod = -1.0/8.0;
                     }
-                    if delta_lod != 0 {
-                        mandel_commands[5] *= 2.0_f32.powi(delta_lod.into());
+                    if delta_lod != 0.0 {
+                        mandel_commands[5] = (mandel_commands[5] + delta_lod).max(1.0/8.0);//*= 2.0_f32.powi(delta_lod.into());
                         is_mandel_update = true;
                         window.request_redraw();
                     }

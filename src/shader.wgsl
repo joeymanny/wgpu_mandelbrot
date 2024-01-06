@@ -44,6 +44,13 @@ fn vs_main(@builtin(vertex_index) in_vertex_index: u32, @builtin(instance_index)
     return vec4<f32>(f32(x), f32(y), 0.0, 1.0);
 }
 
+const zoom_base = 1.3;
+
+var<private> lobf: f32;
+
+const a: f32 = 0.249658;
+const b: f32 = -10.0235;
+const c: f32 = 57.0;
 
 @fragment
 fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
@@ -53,19 +60,29 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     // let c2 = vec3(0., 0., 1.);
     
     var newpos = pos.xy / cmd.size;
-    newpos.x = ((newpos.x - 0.5) * (cmd.size.x / cmd.size.y)) * pow(2.0, cmd.zoom);
-    newpos.y = (newpos.y - 0.5) * pow(2.0, cmd.zoom);
+    newpos.x = ((newpos.x - 0.5) * (cmd.size.x / cmd.size.y)) * pow(zoom_base, cmd.zoom);
+    newpos.y = (newpos.y - 0.5) * pow(zoom_base, cmd.zoom);
     newpos += cmd.offset;
 
-    let mand = f32(mandel(Complex(newpos.x, newpos.y))) / cmd.lod;
+
+
+
+    lobf =  max(8.0, a * cmd.zoom * cmd.zoom + b * cmd.zoom + c);//0.618539x^{2}+-8.30595x+51
+    lobf *= cmd.lod;
+
+    var mand = f32(mandel(Complex(newpos.x, newpos.y))); // / cmd.lod;
     // var circle = vec3(.5, .5, .3);
 
     // var dist = length(newpos - circle.xy) - circle.z;
 
     // dist = smoothstep(0.0, 0.005, dist);
 
-    let col = mix(vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0), mand - .1);
+    mand /= lobf;
+
+    var col = mix(vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0), mand);
     
+    col = vec3(1.0) - col;
+
     return vec4<f32>(col, 1.0);
 
 }
@@ -94,7 +111,7 @@ fn abs_sq(in: Complex) -> f32 {
 fn mandel(c: Complex) -> u32 {
     var z = Complex(0.0, 0.0);
     var i: u32 = u32(0);
-    while (i < u32(cmd.lod)){
+    while (i < u32(lobf)){
         i += u32(1);
         z = mandel_iter(z, c);
         if abs_sq(z) > 4.0 {
