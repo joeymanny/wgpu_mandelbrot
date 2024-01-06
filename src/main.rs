@@ -1,15 +1,15 @@
 const ZOOM_BASE: f32 = 1.3;
 
 use wgpu::{PipelineLayoutDescriptor, RenderPipelineDescriptor, util::DeviceExt};
-use winit::{event::{MouseButton, KeyEvent}, keyboard::{KeyCode, Key, PhysicalKey}};
+use winit::{event::KeyEvent, keyboard::KeyCode};
 fn main(){
+    println!("use arrow keys or wasd to move view\nuse scroll wheel to zoom in/out\nuse + and - to adjust number of iterations for each pixel");
     let event_loop = winit::event_loop::EventLoop::new().unwrap();
     let primary_size = event_loop.primary_monitor().unwrap().size();
     // sure hope nobody has a monitor less than 10 pixels 
-    let size = std::cmp::min(primary_size.width, primary_size.height);
     let window = winit::window::WindowBuilder::new()
         // .with_min_inner_size(winit::dpi::PhysicalSize{width,height,})
-        .with_inner_size(winit::dpi::PhysicalSize::new(size,size))
+        .with_inner_size(primary_size)
         .with_title("mandelbrot set")
         .build(&event_loop)
         .unwrap();
@@ -131,8 +131,6 @@ async fn run(event_loop: winit::event_loop::EventLoop<()>, window: winit::window
         } = event {
         match event {
             winit::event::WindowEvent::Resized(new_size) => {
-                println!("resize");
-
                 config.width = new_size.width.max(1);
                 config.height = new_size.height.max(1);
                 surface.configure(&device, &config);
@@ -178,7 +176,7 @@ async fn run(event_loop: winit::event_loop::EventLoop<()>, window: winit::window
                     if let winit::event::MouseScrollDelta::LineDelta(_, y) = delta{
                         if y.is_sign_positive(){
                             is_mandel_update = true;
-                            mandel_commands[4] -= 1.0;
+                            mandel_commands[4] = (mandel_commands[4] - 1.0).max(-50.0);
                             window.request_redraw();
                         }else if y.is_sign_negative(){
                             is_mandel_update = true;
