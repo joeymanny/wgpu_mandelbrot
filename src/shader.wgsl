@@ -1,10 +1,10 @@
 @group(0) @binding(0) var<uniform> cmd: MandelCommands;
 
 struct MandelCommands{
-    size: vec2<f32>,
-    offset: vec2<f32>,
-    zoom: f32,
-    lod: f32
+    size: vec2<f32>, // size of screen
+    offset: vec2<f32>, // movement x/y
+    zoom: f32, // to be based 2 (2^zoom)
+    lod: f32 // factor to multiply dynamic lod by
 }
 
 @vertex
