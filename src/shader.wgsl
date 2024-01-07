@@ -85,7 +85,7 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     // mand /= 5.0;
 
     mand /= lodf; // normalize to 0 - 1 (see number of loops in mandel() function)
-    var e: u8 = 1;
+    // var e: u8 = 1;
     var col = mix(vec3(0.008, 0.0, 0.08), vec3(.03, 0.0, 0.0), mand_val % 5.0 / 4.0); // what color should it be if outside of set
     var background = vec3(0.0);
     col = mix(col, background, step(f32(u32(lodf) - u32(1)), mand_val)); // should it have outside or inside color
